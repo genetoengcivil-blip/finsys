@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
 export async function login(formData: FormData) {
-  const supabase = createClient()
+  const supabase = await createClient() // ✅ Adicione await aqui
 
   const data = {
     email: formData.get('email') as string,
@@ -23,7 +23,7 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
-  const supabase = createClient()
+  const supabase = await createClient() // ✅ Adicione await aqui
 
   const data = {
     email: formData.get('email') as string,
@@ -46,7 +46,7 @@ export async function signup(formData: FormData) {
 }
 
 export async function signOut() {
-  const supabase = createClient()
+  const supabase = await createClient() // ✅ Adicione await aqui
   await supabase.auth.signOut()
   redirect('/')
 }
