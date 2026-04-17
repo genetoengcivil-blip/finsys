@@ -13,8 +13,17 @@ export default function LoginPage() {
     setIsLoading(true);
     setError(null);
     
-    // Chama a Server Action
-    await login(formData);
+    try {
+      const result = await login(formData);
+      
+      if (result?.error) {
+        setError(result.error);
+        setIsLoading(false);
+      }
+    } catch (err) {
+      setError('Erro ao tentar fazer login. Verifique sua conexão.');
+      setIsLoading(false);
+    }
   };
 
   return (
