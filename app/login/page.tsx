@@ -2,37 +2,19 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { BarChart3, ArrowLeft, Loader2 } from 'lucide-react';
-import { createClient } from '@/lib/supabase';
+import { login } from '@/app/auth/actions';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const supabase = createClient();
-  
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (formData: FormData) => {
     setIsLoading(true);
     setError(null);
-
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (authError) {
-      setError("Credenciais inválidas. Verifique seu e-mail e senha.");
-      setIsLoading(false);
-      return;
-    }
-
-    router.push('/dashboard');
-    router.refresh();
+    
+    // Chama a Server Action
+    await login(formData);
   };
 
   return (
@@ -57,13 +39,13 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSignIn} className="space-y-5">
+          <form action={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">E-mail</label>
+              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-1.5">E-mail</label>
               <input 
+                id="email"
+                name="email"
                 type="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com" 
                 required
                 className="w-full px-4 py-3 bg-white border border-slate-300 text-slate-900 font-medium placeholder:text-slate-400 rounded-lg focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 outline-none transition-all"
@@ -71,13 +53,13 @@ export default function LoginPage() {
             </div>
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <label className="block text-sm font-semibold text-slate-700">Senha</label>
+                <label htmlFor="password" className="block text-sm font-semibold text-slate-700">Senha</label>
                 <Link href="#" className="text-sm text-blue-600 font-medium hover:underline">Esqueceu a senha?</Link>
               </div>
               <input 
+                id="password"
+                name="password"
                 type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••" 
                 required
                 className="w-full px-4 py-3 bg-white border border-slate-300 text-slate-900 font-medium placeholder:text-slate-400 rounded-lg focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 outline-none transition-all"
