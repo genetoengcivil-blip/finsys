@@ -1,4 +1,3 @@
-// lib/supabase/server.ts
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
@@ -17,14 +16,14 @@ export async function createClient() {
           try {
             cookieStore.set({ name, value, ...options })
           } catch (error) {
-            // Ignorar erro em Server Components
+            // Ignorar erro
           }
         },
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: '', ...options })
           } catch (error) {
-            // Ignorar erro em Server Components
+            // Ignorar erro
           }
         },
       },
