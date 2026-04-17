@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-const config: Config {
+const config: Config = {
   // ATENÇÃO: Esta linha é essencial para o funcionamento do Modo Escuro via botão
   darkMode: 'class',
   
