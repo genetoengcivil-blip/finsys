@@ -1,33 +1,21 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+// app/auth/actions.ts
+'use server'
 
-export async function createClient() {
-  // O SEGREDO ESTÁ AQUI: No Next.js 16, cookies() precisa de await
-  const cookieStore = await cookies()
+import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value, ...options })
-          } catch (error) {
-            // Se for chamado de um Server Component, podemos ignorar o erro
-          }
-        },
-        remove(name: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value: '', ...options })
-          } catch (error) {
-            // Se for chamado de um Server Component, podemos ignorar o erro
-          }
-        },
-      },
-    }
-  )
+export async function signInAction(data: { email: string; password: string }) {
+  // ❌ Antes (errado):
+  // const supabase = createClient()
+  
+  // ✅ Depois (correto):
+  const supabase = await createClient() // ← Adicione o await aqui!
+  
+  const { error } = await supabase.auth.signInWithPassword(data)
+  
+  if (error) {
+    return redirect('/login?error=Could not authenticate user')
+  }
+  
+  redirect('/dashboard')
 }
