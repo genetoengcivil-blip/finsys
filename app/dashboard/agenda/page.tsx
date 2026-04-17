@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { 
   format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, 
-  isSameMonth, isSameDay, addDays, eachDayOfInterval, addWeeks, subWeeks, isToday
+  isSameMonth, isSameDay, addDays, subDays, eachDayOfInterval, addWeeks, subWeeks, isToday
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { 
