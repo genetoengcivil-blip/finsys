@@ -1,21 +1,33 @@
-// app/auth/actions.ts
-'use server'
+// lib/supabase/server.ts
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
-import { createClient } from '@/utils/supabase/server'
-import { redirect } from 'next/navigation'
+export async function createClient() {
+  const cookieStore = await cookies()
 
-export async function signInAction(data: { email: string; password: string }) {
-  // ❌ Antes (errado):
-  // const supabase = createClient()
-  
-  // ✅ Depois (correto):
-  const supabase = await createClient() // ← Adicione o await aqui!
-  
-  const { error } = await supabase.auth.signInWithPassword(data)
-  
-  if (error) {
-    return redirect('/login?error=Could not authenticate user')
-  }
-  
-  redirect('/dashboard')
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value, ...options })
+          } catch (error) {
+            // Ignorar erro em Server Components
+          }
+        },
+        remove(name: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value: '', ...options })
+          } catch (error) {
+            // Ignorar erro em Server Components
+          }
+        },
+      },
+    }
+  )
 }
